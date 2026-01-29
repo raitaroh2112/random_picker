@@ -11,6 +11,8 @@ type OrderAmidaPanelProps = {
   amidakujiData: AmidakujiData | null;
   actionLabel: string;
   resolvedPrizeNames: string[];
+  title: string;
+  onTitleChange: (value: string) => void;
   onDecideOrder: () => void;
   onDecideAmidakuji: () => void;
   onReset: () => void;
@@ -23,21 +25,21 @@ export default function OrderAmidaPanel({
   amidakujiData,
   actionLabel,
   resolvedPrizeNames,
+  title,
+  onTitleChange,
   onDecideOrder,
   onDecideAmidakuji,
   onReset,
 }: OrderAmidaPanelProps) {
-  const helperText = isOrderTab
-    ? "シャッフルで順番を決めます。"
-    : "下の入力欄に候補を貼り付けてください。";
   const needsMoreItems = items.length < 2;
   const orderPrompt = needsMoreItems
     ? "候補は2件以上必要です。"
     : "「決める」を押すと順番が表示されます。";
+  const showResultLabel = Boolean(orderResult);
   const canAct = items.length >= 2;
   const labelWidth = 56;
-  const ladderTop = 20;
-  const ladderBottom = 156;
+  const ladderTop = 24;
+  const ladderBottom = 230;
   const displayItems = items;
   const ladderDisplayWidth = Math.max(1, labelWidth * displayItems.length);
   const shortLabel = (value: string) =>
@@ -87,7 +89,7 @@ export default function OrderAmidaPanel({
     >
       {!isOrderTab && (
         <div className="relative flex w-full items-center justify-center">
-          <div className="flex w-full max-w-3xl flex-col items-center justify-center gap-4 rounded-3xl bg-white/80 px-6 py-6 text-center sm:min-h-[22rem]">
+          <div className="flex w-full max-w-3xl flex-col items-center justify-center gap-4 rounded-3xl bg-white/80 px-6 py-6 text-center sm:min-h-[26rem]">
             <div className="mt-6" />
             {displayItems.length > 0 && !needsMoreItems ? (
               <div className="w-full">
@@ -97,8 +99,8 @@ export default function OrderAmidaPanel({
                 >
                   <div className="inline-block" style={{ width: ladderDisplayWidth }}>
                     <svg
-                      className="mt-3 h-40 w-full"
-                      viewBox={`0 0 ${ladderDisplayWidth} 180`}
+                      className="mt-3 h-56 w-full"
+                      viewBox={`0 0 ${ladderDisplayWidth} 260`}
                     >
                       {displayItems.map((item, index) => (
                         <text
@@ -180,7 +182,7 @@ export default function OrderAmidaPanel({
                           <text
                             key={`label-bottom-${label}-${index}`}
                             x={xForIndex(index)}
-                            y={172}
+                            y={248}
                             textAnchor="middle"
                             dominantBaseline="alphabetic"
                             fontSize="11"
@@ -214,11 +216,44 @@ export default function OrderAmidaPanel({
           isOrderTab ? "md:max-w-sm md:mx-auto" : "max-w-sm"
         }`}
       >
-        {isOrderTab && (
+
+        <div className="mt-4 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <button
+            type="button"
+            onClick={isOrderTab ? onDecideOrder : onDecideAmidakuji}
+            disabled={!canAct}
+            className="h-12 w-full max-w-xs rounded-full bg-zinc-900 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-400 sm:h-12 sm:w-40 sm:max-w-none sm:flex-none sm:text-sm sm:uppercase sm:tracking-[0.3em]"
+          >
+            {actionLabel}
+          </button>
+          <button
+            type="button"
+            onClick={onReset}
+            className="h-12 w-full max-w-xs rounded-full border border-zinc-300 bg-white text-sm font-semibold text-zinc-700 transition hover:border-zinc-400 sm:h-12 sm:w-40 sm:max-w-none sm:flex-none sm:text-sm sm:uppercase sm:tracking-[0.3em]"
+          >
+            リセット
+          </button>
+        </div>
+
+        <div className="flex w-full flex-col items-center gap-2">
+          <input
+            value={title}
+            onChange={(event) => onTitleChange(event.target.value)}
+            maxLength={20}
+            placeholder="タイトルを入力（20文字まで）"
+            aria-label="タイトル"
+            className="h-10 w-full max-w-xs rounded-full border border-zinc-300 bg-white px-4 text-center text-sm font-semibold text-zinc-700 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none"
+          />
+          <p className="text-xs text-zinc-400">{title.length}/20</p>
+        </div>
+
+         {isOrderTab ? (
           <div className="rounded-2xl bg-zinc-900 px-4 py-3 text-white">
-            <p className="text-sm font-bold uppercase tracking-[0.35em] text-white">
-              結果
-            </p>
+            {showResultLabel && (
+              <p className="text-sm font-bold uppercase tracking-[0.35em] text-white">
+                結果
+              </p>
+            )}
             {orderResult ? (
               <div className="mt-3 flex flex-col gap-2 text-sm">
                 {orderResult.map((item, index) => (
@@ -241,29 +276,14 @@ export default function OrderAmidaPanel({
               </p>
             )}
           </div>
+        ) : (
+          <div className="rounded-2xl bg-zinc-900 px-4 py-3 text-white">
+            <p className="text-sm text-white/80" aria-live="polite">
+              決めるを押すと当たりのルートが表示されます。
+            </p>
+          </div>
         )}
 
-        <div className="mt-4 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <button
-            type="button"
-            onClick={isOrderTab ? onDecideOrder : onDecideAmidakuji}
-            disabled={!canAct}
-            className="h-12 w-full max-w-xs rounded-full bg-zinc-900 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-400 sm:h-12 sm:w-40 sm:max-w-none sm:flex-none sm:text-sm sm:uppercase sm:tracking-[0.3em]"
-          >
-            {actionLabel}
-          </button>
-          <button
-            type="button"
-            onClick={onReset}
-            className="h-12 w-full max-w-xs rounded-full border border-zinc-300 bg-white text-sm font-semibold text-zinc-700 transition hover:border-zinc-400 sm:h-12 sm:w-40 sm:max-w-none sm:flex-none sm:text-sm sm:uppercase sm:tracking-[0.3em]"
-          >
-            リセット
-          </button>
-        </div>
-
-        {isOrderTab ? (
-          <p className="text-sm text-zinc-500">{helperText}</p>
-        ) : null}
       </div>
     </div>
   );

@@ -35,6 +35,11 @@ export default function EditPanel({
   onRemoveItem,
   onUpdateItem,
 }: EditPanelProps) {
+  const panelTitles: Record<EditPanelProps["activeTab"], string> = {
+    roulette: "ルーレット設定",
+    order: "順番決め設定",
+    amidakuji: "アミダ設定",
+  };
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState("");
 
@@ -72,7 +77,7 @@ export default function EditPanel({
       <div className="flex flex-col gap-3 items-center text-center">
         <div>
           <p className="font-display text-xl text-zinc-900">
-            {activeTab === "amidakuji" ? "アミダ設定" : "リストを編集"}
+            {panelTitles[activeTab]}
           </p>
         </div>
           {activeTab === "amidakuji" && (
@@ -84,7 +89,7 @@ export default function EditPanel({
               <textarea
                 value={prizeInputValue}
                 onChange={(event) => onPrizeInputChange(event.target.value)}
-                placeholder="例: 特賞, 1等, Amazonギフト"
+                placeholder="カンマか改行で複数入力できます。"
                 rows={2}
                 className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm focus:border-zinc-400 focus:outline-none"
               />
@@ -96,9 +101,6 @@ export default function EditPanel({
                   追加
                 </button>
               </div>
-            <p className="mt-2 text-xs text-zinc-500">
-              カンマか改行で複数入力できます。
-            </p>
             {prizeMessage && (
               <p className="mt-2 text-sm font-semibold text-amber-600">
                 {prizeMessage}

@@ -38,6 +38,9 @@ export default function Roulette() {
     "roulette" | "order" | "amidakuji"
   >("roulette");
   const [orderResult, setOrderResult] = useState<string[] | null>(null);
+  const [rouletteTitle, setRouletteTitle] = useState("");
+  const [orderTitle, setOrderTitle] = useState("");
+  const [amidakujiTitle, setAmidakujiTitle] = useState("");
   const [amidakujiData, setAmidakujiData] = useState<{
     connections: boolean[][];
     bottomLabels: string[];
@@ -465,7 +468,7 @@ export default function Roulette() {
   };
 
   const selectedItem =
-    selectedIndex === null ? "回すと結果が表示されます。" : items[selectedIndex];
+    selectedIndex === null ? "" : items[selectedIndex];
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -502,6 +505,8 @@ export default function Roulette() {
             slice={slice}
             isSpinning={isSpinning}
             selectedItem={selectedItem}
+            title={rouletteTitle}
+            onTitleChange={setRouletteTitle}
             onStart={startSpin}
             onStop={stopSpin}
             onReset={resetItems}
@@ -515,6 +520,8 @@ export default function Roulette() {
             amidakujiData={amidakujiData}
             actionLabel={actionLabel}
             resolvedPrizeNames={resolvedPrizeNames}
+            title={isOrderTab ? orderTitle : amidakujiTitle}
+            onTitleChange={isOrderTab ? setOrderTitle : setAmidakujiTitle}
             onDecideOrder={decideOrder}
             onDecideAmidakuji={decideAmidakuji}
             onReset={resetItems}
