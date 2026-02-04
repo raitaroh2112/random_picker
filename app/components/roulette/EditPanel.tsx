@@ -7,6 +7,7 @@ type EditPanelProps = {
   onAddPrizes: () => void;
   prizeItems: string[];
   onRemovePrize: (index: number) => void;
+  onUpdatePrize: (index: number, value: string) => void;
   prizeLimitReached: boolean;
   prizeMessage: string | null;
   inputValue: string;
@@ -25,6 +26,7 @@ export default function EditPanel({
   onAddPrizes,
   prizeItems,
   onRemovePrize,
+  onUpdatePrize,
   prizeLimitReached,
   prizeMessage,
   inputValue,
@@ -42,6 +44,8 @@ export default function EditPanel({
   };
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState("");
+  const [editingPrizeIndex, setEditingPrizeIndex] = useState<number | null>(null);
+  const [editingPrizeValue, setEditingPrizeValue] = useState("");
 
   const startEdit = (index: number, value: string) => {
     setEditingIndex(index);
@@ -71,6 +75,36 @@ export default function EditPanel({
     }
     onUpdateItem(editingIndex, value);
     cancelEdit();
+  };
+
+  const startPrizeEdit = (index: number, value: string) => {
+    setEditingPrizeIndex(index);
+    setEditingPrizeValue(value);
+  };
+
+  const cancelPrizeEdit = () => {
+    setEditingPrizeIndex(null);
+    setEditingPrizeValue("");
+  };
+
+  const commitPrizeEdit = () => {
+    if (editingPrizeIndex === null) return;
+    const value = editingPrizeValue.trim();
+    if (!value) {
+      cancelPrizeEdit();
+      return;
+    }
+    const duplicate = prizeItems.some(
+      (item, idx) =>
+        idx !== editingPrizeIndex && item.toLowerCase() === value.toLowerCase()
+    );
+    if (duplicate) {
+      setEditingPrizeValue(prizeItems[editingPrizeIndex] ?? "");
+      cancelPrizeEdit();
+      return;
+    }
+    onUpdatePrize(editingPrizeIndex, value);
+    cancelPrizeEdit();
   };
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-zinc-200/70 bg-white/70 p-5 sm:p-6">
@@ -117,9 +151,37 @@ export default function EditPanel({
                       key={`${item}-${index}`}
                       className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-4 py-3"
                     >
-                      <span className="text-sm font-medium text-zinc-800">
-                        {item}
-                      </span>
+                      <div className="min-w-0 flex-1 pr-2">
+                        {editingPrizeIndex === index ? (
+                          <input
+                            value={editingPrizeValue}
+                            onChange={(event) =>
+                              setEditingPrizeValue(event.target.value)
+                            }
+                            onBlur={commitPrizeEdit}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") {
+                                event.preventDefault();
+                                commitPrizeEdit();
+                              }
+                              if (event.key === "Escape") {
+                                event.preventDefault();
+                                cancelPrizeEdit();
+                              }
+                            }}
+                            autoFocus
+                            className="h-8 w-full rounded-md border border-zinc-200 px-2 text-sm focus:border-zinc-400 focus:outline-none"
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => startPrizeEdit(index, item)}
+                            className="block w-full truncate text-left text-sm font-medium text-zinc-800"
+                          >
+                            {item}
+                          </button>
+                        )}
+                      </div>
                       <button
                         type="button"
                         onClick={() => onRemovePrize(index)}

@@ -31,6 +31,17 @@ export default function RoulettePanel({
 
   return (
     <div className="flex flex-col items-center gap-6">
+      <div className="flex w-full max-w-sm flex-col items-center gap-2">
+        <input
+          value={title}
+          onChange={(event) => onTitleChange(event.target.value)}
+          maxLength={20}
+          placeholder="タイトルを入力（20文字まで）"
+          aria-label="タイトル"
+          className="h-10 w-full max-w-xs rounded-full border border-zinc-300 bg-white px-4 text-center text-sm font-semibold text-zinc-700 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none"
+        />
+      </div>
+
       <div className="relative flex items-center justify-center">
         <div className="absolute -top-4 z-10 h-0 w-0 border-l-[14px] border-r-[14px] border-t-[22px] border-l-transparent border-r-transparent border-t-zinc-900 drop-shadow" />
         <div
@@ -94,17 +105,7 @@ export default function RoulettePanel({
             リセット
           </button>
         </div>
-        <div className="flex w-full flex-col items-center gap-2">
-          <input
-            value={title}
-            onChange={(event) => onTitleChange(event.target.value)}
-            maxLength={20}
-            placeholder="タイトルを入力（20文字まで）"
-            aria-label="タイトル"
-            className="h-10 w-full max-w-xs rounded-full border border-zinc-300 bg-white px-4 text-center text-sm font-semibold text-zinc-700 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none"
-          />
-          <p className="text-xs text-zinc-400">{title.length}/20</p>
-        </div>
+        
         <div className="rounded-2xl bg-zinc-900 px-4 py-3 text-white">
           {showResultLabel && (
             <p className="text-sm font-bold uppercase tracking-[0.35em] text-white">

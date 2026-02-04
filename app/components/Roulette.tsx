@@ -202,6 +202,32 @@ export default function Roulette() {
     setPrizeMessage(null);
   };
 
+  const updatePrize = (index: number, value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      setPrizeMessage("空の当たり名にはできません。");
+      return;
+    }
+    let updated = false;
+    setPrizeItems((prev) => {
+      const exists = prev.some(
+        (item, idx) =>
+          idx !== index && item.toLowerCase() === trimmed.toLowerCase()
+      );
+      if (exists) return prev;
+      const next = [...prev];
+      next[index] = trimmed;
+      updated = true;
+      return next;
+    });
+    if (!updated) {
+      setPrizeMessage("同じ名前の当たりが既にあります。");
+      return;
+    }
+    setPrizeMessage(null);
+    setAmidakujiData(null);
+  };
+
   const shuffleItems = <T,>(list: T[]) => {
     const result = [...list];
     for (let i = result.length - 1; i > 0; i -= 1) {
@@ -467,6 +493,14 @@ export default function Roulette() {
     spinPhaseRef.current = "idle";
   };
 
+  const confirmAndReset = () => {
+    const accepted = window.confirm(
+      "リセットすると候補・当たり・結果が初期状態に戻ります。続けますか？"
+    );
+    if (!accepted) return;
+    resetItems();
+  };
+
   const selectedItem =
     selectedIndex === null ? "" : items[selectedIndex];
 
@@ -485,6 +519,7 @@ export default function Roulette() {
         onAddPrizes={addPrizes}
         prizeItems={prizeItems}
         onRemovePrize={removePrize}
+        onUpdatePrize={updatePrize}
         prizeLimitReached={prizeLimitReached}
         prizeMessage={prizeMessage}
         inputValue={inputValue}
@@ -509,7 +544,7 @@ export default function Roulette() {
             onTitleChange={setRouletteTitle}
             onStart={startSpin}
             onStop={stopSpin}
-            onReset={resetItems}
+            onReset={confirmAndReset}
             toShortLabel={toShortLabel}
           />
         ) : (
@@ -524,7 +559,7 @@ export default function Roulette() {
             onTitleChange={isOrderTab ? setOrderTitle : setAmidakujiTitle}
             onDecideOrder={decideOrder}
             onDecideAmidakuji={decideAmidakuji}
-            onReset={resetItems}
+            onReset={confirmAndReset}
           />
         )}
       </div>
