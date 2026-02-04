@@ -34,7 +34,7 @@ export default function OrderAmidaPanel({
   onReset,
 }: OrderAmidaPanelProps) {
   const [selectedStartIndex, setSelectedStartIndex] = useState<number | null>(
-    null
+    null,
   );
   const [traceSeed, setTraceSeed] = useState(0);
   const [traceProgress, setTraceProgress] = useState(0);
@@ -106,7 +106,9 @@ export default function OrderAmidaPanel({
     }
     const coordinates = buildPathCoordinates(selectedStartIndex);
     if (coordinates.length === 0) return null;
-    const points = coordinates.map((point) => `${point.x},${point.y}`).join(" ");
+    const points = coordinates
+      .map((point) => `${point.x},${point.y}`)
+      .join(" ");
     const pathLength = coordinates.reduce((sum, point, index) => {
       if (index === 0) return sum;
       const prev = coordinates[index - 1];
@@ -115,14 +117,20 @@ export default function OrderAmidaPanel({
       return sum + Math.hypot(dx, dy);
     }, 0);
     const destinationIndex = amidakujiData.mapping[selectedStartIndex];
-    const destinationLabel = amidakujiData.bottomLabels[destinationIndex] ?? "?";
+    const destinationLabel =
+      amidakujiData.bottomLabels[destinationIndex] ?? "?";
     return {
       points,
       pathLength,
       destinationLabel,
       isPrize: resolvedPrizeNames.includes(destinationLabel),
     };
-  }, [amidakujiData, selectedStartIndex, displayItems.length, resolvedPrizeNames]);
+  }, [
+    amidakujiData,
+    selectedStartIndex,
+    displayItems.length,
+    resolvedPrizeNames,
+  ]);
 
   useEffect(() => {
     setSelectedStartIndex(null);
@@ -205,7 +213,10 @@ export default function OrderAmidaPanel({
                   className="w-full overflow-x-auto pb-4"
                   style={{ WebkitOverflowScrolling: "touch" }}
                 >
-                  <div className="inline-block" style={{ width: ladderDisplayWidth }}>
+                  <div
+                    className="inline-block"
+                    style={{ width: ladderDisplayWidth }}
+                  >
                     {amidakujiAssignments.length > 0 && (
                       <p className="text-xs text-zinc-700">
                         上の名前をタップすると行き先をアニメーション表示します。
@@ -245,7 +256,9 @@ export default function OrderAmidaPanel({
                             fontSize="10"
                             fontWeight="600"
                             fill={
-                              selectedStartIndex === index ? "#0284c7" : "#52525b"
+                              selectedStartIndex === index
+                                ? "#0284c7"
+                                : "#52525b"
                             }
                           >
                             {shortLabel(item)}
@@ -263,7 +276,8 @@ export default function OrderAmidaPanel({
                               (rows + 1);
                           return row.map((hasLine, colIndex) => {
                             if (!hasLine) return null;
-                            if (colIndex >= displayItems.length - 1) return null;
+                            if (colIndex >= displayItems.length - 1)
+                              return null;
                             const x1 = xForIndex(colIndex);
                             const x2 = xForIndex(colIndex + 1);
                             return (
@@ -280,7 +294,7 @@ export default function OrderAmidaPanel({
                               />
                             );
                           });
-                        }
+                        },
                       )}
                       {displayItems.map((_, index) => {
                         const x = xForIndex(index);
@@ -413,7 +427,7 @@ export default function OrderAmidaPanel({
           </>
         )}
 
-         {isOrderTab ? (
+        {isOrderTab ? (
           <div className="rounded-2xl bg-zinc-900 px-4 py-3 text-white">
             {showResultLabel && (
               <p className="text-sm font-bold uppercase tracking-[0.35em] text-white">
@@ -477,7 +491,6 @@ export default function OrderAmidaPanel({
             )}
           </div>
         )}
-
       </div>
     </div>
   );

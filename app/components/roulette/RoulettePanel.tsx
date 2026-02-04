@@ -105,7 +105,7 @@ export default function RoulettePanel({
             リセット
           </button>
         </div>
-        
+
         <div className="rounded-2xl bg-zinc-900 px-4 py-3 text-white">
           {showResultLabel && (
             <p className="text-sm font-bold uppercase tracking-[0.35em] text-white">
