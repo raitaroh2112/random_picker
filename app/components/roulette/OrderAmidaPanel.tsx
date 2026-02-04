@@ -80,6 +80,18 @@ export default function OrderAmidaPanel({
         return acc;
       }, [])
     : [];
+  const amidakujiAssignments = amidakujiData
+    ? items.map((item, index) => {
+        const mappedIndex = amidakujiData.mapping[index];
+        const destination = amidakujiData.bottomLabels[mappedIndex] ?? "?";
+        return {
+          item,
+          mappedIndex,
+          destination,
+          isPrize: resolvedPrizeNames.includes(destination),
+        };
+      })
+    : [];
 
   return (
     <div
@@ -278,9 +290,36 @@ export default function OrderAmidaPanel({
           </div>
         ) : (
           <div className="rounded-2xl bg-zinc-900 px-4 py-3 text-white">
-            <p className="text-sm text-white/80" aria-live="polite">
-              決めるを押すと当たりのルートが表示されます。
-            </p>
+            {amidakujiAssignments.length > 0 ? (
+              <div className="mt-1 flex flex-col gap-2 text-sm">
+                <p className="text-sm font-bold uppercase tracking-[0.35em] text-white">
+                  割り当て結果
+                </p>
+                {amidakujiAssignments.map((assignment, index) => (
+                  <div
+                    key={`${assignment.item}-${assignment.destination}-${index}`}
+                    className="mx-auto flex w-full max-w-xs items-center justify-between rounded-full bg-white/10 px-3 py-2"
+                  >
+                    <span className="truncate pr-2 text-left font-semibold">
+                      {assignment.item}
+                    </span>
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        assignment.isPrize
+                          ? "bg-amber-300/30 text-amber-100"
+                          : "bg-white/15 text-white"
+                      }`}
+                    >
+                      {assignment.destination}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-white/80" aria-live="polite">
+                決めるを押すと当たりのルートが表示されます。
+              </p>
+            )}
           </div>
         )}
 
